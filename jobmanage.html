@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+<head>
+  <meta charset="UTF-8">
+  <title>ตารางกรอกตัวเลข</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      text-align: center;
+      padding: 4px;
+    }
+    input[type="number"] {
+      width: 40px;
+      text-align: center;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ซ่อนลูกศรใน Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+  </style>
+</head>
+<body>
+<div id="capture">
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ลำดับ</th>
+      <th>ชื่อ</th>
+      <th>จันทร์ <input type="number"> / <input type="number"></th>
+      <th>อังคาร <input type="number"> / <input type="number"></th>
+      <th>พุธ <input type="number"> / <input type="number"></th>
+      <th>พฤหัส <input type="number"> / <input type="number"></th>
+      <th>ศุกร์ <input type="number"> / <input type="number"></th>
+      <th>เสาร์ <input type="number"> / <input type="number"></th>
+      <th>อาทิตย์ <input type="number"> / <input type="number"></th>
+    </tr>
+  </thead>
+  <tbody id="tableBody">
+    <!-- คุณสามารถแก้ไขรายชื่อและค่า default ได้ตามต้องการ -->
+    <tr><td>1</td><td>หนึ่ง</td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><input type="number" value="8"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>2</td><td>พี่ปลา</td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>3</td><td>ป๋อม</td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>4</td><td>บีม</td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>5</td><td>ทรี</td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>6</td><td>คนใหม่</td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><input type="number" value="10"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>7</td><td>คิม</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>8</td><td>แบม</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>9</td><td>แบม</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>10</td><td>จีบ</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>11</td><td>จิ๊บ</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>12</td><td>เอ็ม</td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"></td><td><input type="number" value="2"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>13</td><td>ปิง</td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>14</td><td>นัฐญ์</td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>15</td><td>บัวบูรณ์</td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"></td><td><input type="number" value="3"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>16</td><td>เลนนเน็ต</td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>17</td><td>มะนม</td><td><input type="number" value="17"></td><td><input type="number" value="17"></td><td><input type="number" value="17"></td><td><input type="number" value="17"></td><td><input type="number" value="17"></td><td><input type="number" value="17"></td><td><input type="number" value="17"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>18</td><td>พลอย</td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+    <tr><td>19</td><td>พี่ขาว</td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="9"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="2"></td><td><input type="number" value="2"><td><button class="btn" onclick="deleteRow(this)">❌</button></td></tr>
+  </tbody>
+</table>
+</div>
+<br>
+<button class="btn btn-info mb-2" onclick="addRow()">➕ เพิ่มแถว</button>
+<button class="btn btn-primary mb-2" onclick="saveDataToStorage()">💾 บันทึกข้อมูลลง Storage</button>
+<button class="btn btn-success mb-2" onclick="saveAsImage()">📷 เซฟตารางเป็นรูปภาพ</button>
+
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+<script>
+  function saveAsImage() {
+  const target = document.getElementById("capture");
+
+  // ซ่อนปุ่มลบ ❌ ทั้งหมดก่อน
+  const deleteButtons = target.querySelectorAll("button");
+  deleteButtons.forEach(btn => btn.style.display = "none");
+
+  // แปลง input เป็นข้อความก่อนถ่ายภาพ
+  const inputs = target.querySelectorAll("input[type='number'], input[type='text']");
+  const spans = [];
+  inputs.forEach(input => {
+    // สร้าง span แทน input
+    const span = document.createElement("span");
+    span.style.display = "inline-block";
+    span.style.width = input.offsetWidth + "px";
+    span.style.height = input.offsetHeight + "px";
+    span.style.textAlign = "center";
+    span.style.verticalAlign = "middle";
+    span.style.fontFamily = window.getComputedStyle(input).fontFamily;
+    span.style.fontSize = window.getComputedStyle(input).fontSize;
+    span.style.lineHeight = input.offsetHeight + "px";
+    span.textContent = input.value;
+
+    input.style.display = "none";
+    input.parentNode.insertBefore(span, input);
+    spans.push(span);
+  });
+
+  // ถ่ายภาพ
+  html2canvas(target).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'table.png';
+    link.href = canvas.toDataURL();
+    link.click();
+
+    // คืนค่า input กลับมา และลบ span ที่เพิ่มขึ้น
+    inputs.forEach(input => input.style.display = "");
+    spans.forEach(span => span.remove());
+
+    // แสดงปุ่มลบ ❌ กลับมา
+    deleteButtons.forEach(btn => btn.style.display = "");
+  });
+}
+
+
+  function addRow() {
+    const tbody = document.getElementById("tableBody");
+    const rowCount = tbody.rows.length;
+    const newRow = tbody.insertRow();
+
+    // ลำดับ
+    const cell0 = newRow.insertCell(0);
+    cell0.textContent = rowCount + 1;
+
+    // ชื่อ
+    const cell1 = newRow.insertCell(1);
+    cell1.innerHTML = '<input type="text" value="ชื่อ">';
+
+    // ช่องตัวเลข 7 วัน
+    for (let i = 0; i < 7; i++) {
+      const cell = newRow.insertCell(i + 2);
+      cell.innerHTML = '<input type="number" value="0">';
+    }
+
+    // ปุ่มลบ
+    const cellLast = newRow.insertCell(9);
+    cellLast.innerHTML = '<button onclick="deleteRow(this)">❌</button>';
+  }
+
+  function deleteRow(button) {
+    const row = button.parentNode.parentNode;
+    row.remove();
+
+    // รีเซ็ตลำดับแถวใหม่
+    const rows = document.querySelectorAll("#tableBody tr");
+    rows.forEach((tr, index) => {
+      tr.cells[0].textContent = index + 1;
+    });
+  }
+
+  // ฟังก์ชันเซฟเป็นภาพ (ถ้าต้องการ)
+  function saveAsImage() {
+    const target = document.getElementById("capture");
+    html2canvas(target).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'table.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+  function saveDataToStorage() {
+  const tbody = document.getElementById("tableBody");
+  const data = [];
+  for (let row of tbody.rows) {
+    const rowData = {
+      name: row.cells[1].querySelector('input[type="text"]') 
+            ? row.cells[1].querySelector('input[type="text"]').value
+            : row.cells[1].textContent.trim(),
+      numbers: []
+    };
+    for (let i = 2; i <= 8; i++) { // คอลัมน์ตัวเลข 7 วัน (2-8)
+      const input = row.cells[i].querySelector('input[type="number"]');
+      rowData.numbers.push(input ? input.value : "");
+    }
+    data.push(rowData);
+  }
+  localStorage.setItem('tableData', JSON.stringify(data));
+  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+}
+
+// โหลดข้อมูลจาก localStorage มาแสดงในตาราง
+function loadDataFromStorage() {
+  const storedData = localStorage.getItem('tableData');
+  if (!storedData) return; // ถ้าไม่มีข้อมูลก็ข้ามไป
+
+  const data = JSON.parse(storedData);
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = ""; // ล้างตารางก่อน
+
+  data.forEach((item, index) => {
+    const newRow = tbody.insertRow();
+
+    // ลำดับ
+    const cell0 = newRow.insertCell(0);
+    cell0.textContent = index + 1;
+
+    // ชื่อ (ใช้ input text เพื่อแก้ไขได้)
+    const cell1 = newRow.insertCell(1);
+    cell1.innerHTML = `<input type="text" value="${item.name}">`;
+
+    // ตัวเลข 7 วัน
+    for (let i = 0; i < 7; i++) {
+      const cell = newRow.insertCell(i + 2);
+      cell.innerHTML = `<input type="number" value="${item.numbers[i] || 0}">`;
+    }
+
+    // ปุ่มลบ
+    const cellLast = newRow.insertCell(9);
+    cellLast.innerHTML = '<button onclick="deleteRow(this)">❌</button>';
+  });
+}
+
+// โหลดข้อมูลเมื่อเปิดหน้าเว็บ
+window.onload = function() {
+  loadDataFromStorage();
+};
+</script>
+</body>
+</html>
