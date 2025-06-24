@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#ffffff">
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -596,7 +591,17 @@ const weekSelect = document.getElementById('weekSelect');
       const selectedWeek = weeks[weekSelect.value];
       renderWeekHeader(selectedWeek.start);
     });
-
+  function openFullscreen() {
+    const elem = document.documentElement;
+    
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
 
 
 
@@ -606,6 +611,7 @@ const weekSelect = document.getElementById('weekSelect');
   // โหลดข้อมูลเมื่อเปิดหน้าเว็บ
   window.onload = function() {
     loadDataFromStorage();
+    openFullscreen();
   };
 </script>
                         </body>
