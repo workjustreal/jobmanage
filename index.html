@@ -305,56 +305,56 @@ input[type=number] {
                             เซฟตารางเป็นรูปภาพ</button>
 
                           <!-- html2canvas -->
-                          <script
-                            src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-                          <script
-                            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-                            integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-                            crossorigin="anonymous"></script>
-                          <script>
+<script
+  src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+  crossorigin="anonymous"></script>
+<script>
   function saveAsImage() {
-  const target = document.getElementById("capture");
+    const target = document.getElementById("capture");
 
-  // ซ่อนปุ่มลบ ❌ ทั้งหมดก่อน
-  const deleteButtons = target.querySelectorAll("button");
-  deleteButtons.forEach(btn => btn.style.display = "none");
+    // ซ่อนปุ่มลบ ❌ ทั้งหมดก่อน
+    const deleteButtons = target.querySelectorAll("button");
+    deleteButtons.forEach(btn => btn.style.display = "none");
 
-  // แปลง input เป็นข้อความก่อนถ่ายภาพ
-  const inputs = target.querySelectorAll("input[type='number'], input[type='text']");
-  const spans = [];
-  inputs.forEach(input => {
-    // สร้าง span แทน input
-    const span = document.createElement("span");
-    span.style.display = "inline-block";
-    span.style.width = input.offsetWidth + "px";
-    span.style.height = input.offsetHeight + "px";
-    span.style.textAlign = "center";
-    span.style.verticalAlign = "middle";
-    span.style.fontFamily = window.getComputedStyle(input).fontFamily;
-    span.style.fontSize = window.getComputedStyle(input).fontSize;
-    span.style.lineHeight = input.offsetHeight + "px";
-    span.textContent = input.value;
+    // แปลง input เป็นข้อความก่อนถ่ายภาพ
+    const inputs = target.querySelectorAll("input[type='number'], input[type='text']");
+    const spans = [];
+    inputs.forEach(input => {
+      // สร้าง span แทน input
+      const span = document.createElement("span");
+      span.style.display = "inline-block";
+      span.style.width = input.offsetWidth + "px";
+      span.style.height = input.offsetHeight + "px";
+      span.style.textAlign = "center";
+      span.style.verticalAlign = "middle";
+      span.style.fontFamily = window.getComputedStyle(input).fontFamily;
+      span.style.fontSize = window.getComputedStyle(input).fontSize;
+      span.style.lineHeight = input.offsetHeight + "px";
+      span.textContent = input.value;
 
-    input.style.display = "none";
-    input.parentNode.insertBefore(span, input);
-    spans.push(span);
-  });
+      input.style.display = "none";
+      input.parentNode.insertBefore(span, input);
+      spans.push(span);
+    });
 
-  // ถ่ายภาพ
-  html2canvas(target).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'table.png';
-    link.href = canvas.toDataURL();
-    link.click();
+    // ถ่ายภาพ
+    html2canvas(target).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'table.png';
+      link.href = canvas.toDataURL();
+      link.click();
 
-    // คืนค่า input กลับมา และลบ span ที่เพิ่มขึ้น
-    inputs.forEach(input => input.style.display = "");
-    spans.forEach(span => span.remove());
+      // คืนค่า input กลับมา และลบ span ที่เพิ่มขึ้น
+      inputs.forEach(input => input.style.display = "");
+      spans.forEach(span => span.remove());
 
-    // แสดงปุ่มลบ ❌ กลับมา
-    deleteButtons.forEach(btn => btn.style.display = "");
-  });
-}
+      // แสดงปุ่มลบ ❌ กลับมา
+      deleteButtons.forEach(btn => btn.style.display = "");
+    });
+  }
 
 
   function addRow() {
@@ -404,61 +404,61 @@ input[type=number] {
   }
 
   function saveDataToStorage() {
-  const tbody = document.getElementById("tableBody");
-  const data = [];
-  for (let row of tbody.rows) {
-    const rowData = {
-      name: row.cells[1].querySelector('input[type="text"]') 
-            ? row.cells[1].querySelector('input[type="text"]').value
-            : row.cells[1].textContent.trim(),
-      numbers: []
-    };
-    for (let i = 2; i <= 8; i++) { // คอลัมน์ตัวเลข 7 วัน (2-8)
-      const input = row.cells[i].querySelector('input[type="number"]');
-      rowData.numbers.push(input ? input.value : "");
+    const tbody = document.getElementById("tableBody");
+    const data = [];
+    for (let row of tbody.rows) {
+      const rowData = {
+        name: row.cells[1].querySelector('input[type="text"]') 
+              ? row.cells[1].querySelector('input[type="text"]').value
+              : row.cells[1].textContent.trim(),
+        numbers: []
+      };
+      for (let i = 2; i <= 8; i++) { // คอลัมน์ตัวเลข 7 วัน (2-8)
+        const input = row.cells[i].querySelector('input[type="number"]');
+        rowData.numbers.push(input ? input.value : "");
+      }
+      data.push(rowData);
     }
-    data.push(rowData);
+    localStorage.setItem('tableData', JSON.stringify(data));
+    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
   }
-  localStorage.setItem('tableData', JSON.stringify(data));
-  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-}
 
-// โหลดข้อมูลจาก localStorage มาแสดงในตาราง
-function loadDataFromStorage() {
-  const storedData = localStorage.getItem('tableData');
-  if (!storedData) return; // ถ้าไม่มีข้อมูลก็ข้ามไป
+  // โหลดข้อมูลจาก localStorage มาแสดงในตาราง
+  function loadDataFromStorage() {
+    const storedData = localStorage.getItem('tableData');
+    if (!storedData) return; // ถ้าไม่มีข้อมูลก็ข้ามไป
 
-  const data = JSON.parse(storedData);
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = ""; // ล้างตารางก่อน
+    const data = JSON.parse(storedData);
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = ""; // ล้างตารางก่อน
 
-  data.forEach((item, index) => {
-    const newRow = tbody.insertRow();
+    data.forEach((item, index) => {
+      const newRow = tbody.insertRow();
 
-    // ลำดับ
-    const cell0 = newRow.insertCell(0);
-    cell0.textContent = index + 1;
+      // ลำดับ
+      const cell0 = newRow.insertCell(0);
+      cell0.textContent = index + 1;
 
-    // ชื่อ (ใช้ input text เพื่อแก้ไขได้)
-    const cell1 = newRow.insertCell(1);
-    cell1.innerHTML = `<input type="text" value="${item.name}">`;
+      // ชื่อ (ใช้ input text เพื่อแก้ไขได้)
+      const cell1 = newRow.insertCell(1);
+      cell1.innerHTML = `<input type="text" class="form-control" value="${item.name}">`;
 
-    // ตัวเลข 7 วัน
-    for (let i = 0; i < 7; i++) {
-      const cell = newRow.insertCell(i + 2);
-      cell.innerHTML = `<input type="number" class="form-control" value="${item.numbers[i] || 0}">`;
-    }
+      // ตัวเลข 7 วัน
+      for (let i = 0; i < 7; i++) {
+        const cell = newRow.insertCell(i + 2);
+        cell.innerHTML = `<input type="number" class="form-control" value="${item.numbers[i] || 0}">`;
+      }
 
-    // ปุ่มลบ
-    const cellLast = newRow.insertCell(9);
-    cellLast.innerHTML = '<button onclick="deleteRow(this)">❌</button>';
-  });
-}
+      // ปุ่มลบ
+      const cellLast = newRow.insertCell(9);
+      cellLast.innerHTML = '<button onclick="deleteRow(this)">❌</button>';
+    });
+  }
 
-// โหลดข้อมูลเมื่อเปิดหน้าเว็บ
-window.onload = function() {
-  loadDataFromStorage();
-};
+  // โหลดข้อมูลเมื่อเปิดหน้าเว็บ
+  window.onload = function() {
+    loadDataFromStorage();
+  };
 </script>
                         </body>
                       </html>
