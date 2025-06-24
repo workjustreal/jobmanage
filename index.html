@@ -80,49 +80,58 @@ input[type=number] {
       integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
       crossorigin="anonymous"></script>
     <script>
-  function saveAsImage() {
-    const target = document.getElementById("capture");
+  // function saveAsImage() {
+  //   const target = document.getElementById("capture");
 
-    // ซ่อนปุ่มลบ ❌ ทั้งหมดก่อน
-    const deleteButtons = target.querySelectorAll("button");
-    deleteButtons.forEach(btn => btn.style.display = "none");
+  //   // ซ่อนปุ่มลบ ❌ ทั้งหมดก่อน
+  //   const deleteButtons = target.querySelectorAll("button");
+  //   deleteButtons.forEach(btn => btn.style.display = "none");
 
-    // แปลง input เป็นข้อความก่อนถ่ายภาพ
-    const inputs = target.querySelectorAll("input[type='number'], input[type='text']");
-    const spans = [];
-    inputs.forEach(input => {
-      // สร้าง span แทน input
-      const span = document.createElement("span");
-      span.style.display = "inline-block";
-      span.style.width = input.offsetWidth + "px";
-      span.style.height = input.offsetHeight + "px";
-      span.style.textAlign = "center";
-      span.style.verticalAlign = "middle";
-      span.style.fontFamily = window.getComputedStyle(input).fontFamily;
-      span.style.fontSize = window.getComputedStyle(input).fontSize;
-      span.style.lineHeight = input.offsetHeight + "px";
-      span.textContent = input.value;
+  //   // แปลง input เป็นข้อความก่อนถ่ายภาพ
+  //   const inputs = target.querySelectorAll("input[type='number'], input[type='text']");
+  //   const spans = [];
+  //   inputs.forEach(input => {
+  //     // สร้าง span แทน input
+  //     const span = document.createElement("span");
+  //     span.style.display = "inline-block";
+  //     span.style.width = input.offsetWidth + "px";
+  //     span.style.height = input.offsetHeight + "px";
+  //     span.style.textAlign = "center";
+  //     span.style.verticalAlign = "middle";
+  //     span.style.fontFamily = window.getComputedStyle(input).fontFamily;
+  //     span.style.fontSize = window.getComputedStyle(input).fontSize;
+  //     span.style.lineHeight = input.offsetHeight + "px";
+  //     span.textContent = input.value;
 
-      input.style.display = "none";
-      input.parentNode.insertBefore(span, input);
-      spans.push(span);
-    });
+  //     input.style.display = "none";
+  //     input.parentNode.insertBefore(span, input);
+  //     spans.push(span);
+  //   });
 
-    // ถ่ายภาพ
-    html2canvas(target).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'table.png';
-      link.href = canvas.toDataURL();
-      link.click();
+  //   // ถ่ายภาพ
+  //   html2canvas(target).then(canvas => {
+  //     const link = document.createElement('a');
+  //     link.download = 'table.png';
+  //     link.href = canvas.toDataURL();
+  //     link.click();
 
-      // คืนค่า input กลับมา และลบ span ที่เพิ่มขึ้น
-      inputs.forEach(input => input.style.display = "");
-      spans.forEach(span => span.remove());
+  //     // คืนค่า input กลับมา และลบ span ที่เพิ่มขึ้น
+  //     inputs.forEach(input => input.style.display = "");
+  //     spans.forEach(span => span.remove());
 
-      // แสดงปุ่มลบ ❌ กลับมา
-      deleteButtons.forEach(btn => btn.style.display = "");
-    });
-  }
+  //     // แสดงปุ่มลบ ❌ กลับมา
+  //     deleteButtons.forEach(btn => btn.style.display = "");
+  //   });
+  // }
+
+
+  function saveAndOpenPrintView() {
+  // บันทึกข้อมูลก่อน
+  saveDataToStorage();
+  
+  // เปิดหน้าต่างใหม่
+  const printWindow = window.open('print.html', '_blank');
+}
 
 
   function addRow() {
