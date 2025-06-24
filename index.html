@@ -591,27 +591,18 @@ const weekSelect = document.getElementById('weekSelect');
       const selectedWeek = weeks[weekSelect.value];
       renderWeekHeader(selectedWeek.start);
     });
-  function openFullscreen() {
-    const elem = document.documentElement;
-    
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Safari */
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE11 */
-      elem.msRequestFullscreen();
-    }
-  }
 
 
 
+document.addEventListener('pointerdown', function() {
+  document.documentElement.requestFullscreen();
+}, { once: true });
 
 
 
   // โหลดข้อมูลเมื่อเปิดหน้าเว็บ
   window.onload = function() {
     loadDataFromStorage();
-    openFullscreen();
   };
 </script>
                         </body>
