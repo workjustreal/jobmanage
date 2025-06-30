@@ -148,6 +148,8 @@ input[type=number] {
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
       crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
 
   function saveAndOpenPrintView() {
@@ -170,7 +172,7 @@ input[type=number] {
 
     // ชื่อ
     const cell1 = newRow.insertCell(1);
-    cell1.innerHTML = '<input type="text" class="form-control w-100" value="ชื่อ">';
+    cell1.innerHTML = '<input type="text" class="form-control w-100" placeholder="ชื่อ">';
 
     // ช่องตัวเลข 7 วัน
     for (let i = 0; i < 7; i++) {
@@ -392,6 +394,18 @@ function setupRowNumberClick() {
 // เรียกใช้เมื่อโหลดหน้าเว็บ
 window.addEventListener('load', function() {
   setupRowNumberClick();
+
+  // เปิดใช้งานลากแถว
+  new Sortable(document.getElementById('tableBody'), {
+    animation: 150,
+    onEnd: function () {
+      // อัพเดตลำดับเมื่อมีการสลับแถว
+      const rows = document.querySelectorAll("#tableBody tr");
+      rows.forEach((tr, index) => {
+        tr.cells[0].textContent = index + 1;
+      });
+    }
+  });
 });
 
 
