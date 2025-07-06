@@ -51,13 +51,13 @@
               <th style="width: 50px;"></th>
               <th style="width: 50px;"></th>
               <th style="min-width: 70px; width: 70px !important;">ชื่อ</th>
-              <th style="width: 120px;">จันทร์</th>
-              <th style="width: 120px;">อังคาร</th>
-              <th style="width: 120px;">พุธ</th>
-              <th style="width: 120px;">พฤหัส</th>
-              <th style="width: 120px;">ศุกร์</th>
-              <th style="width: 120px;">เสาร์</th>
-              <th style="width: 120px;">อาทิตย์</th>
+              <th style="width: 70px;">จันทร์</th>
+              <th style="width: 70px;">อังคาร</th>
+              <th style="width: 70px;">พุธ</th>
+              <th style="width: 70px;">พฤหัส</th>
+              <th style="width: 70px;">ศุกร์</th>
+              <th style="width: 70px;">เสาร์</th>
+              <th style="width: 70px;">อาทิตย์</th>
               <th style="width: 50px;"></th>
             </tr>
           </thead>
@@ -136,7 +136,7 @@
         const current = new Date(startDate);
         for (let i = 0; i < 7; i++) {
           const th = document.createElement('th');
-          th.style.width = '120px';
+          th.style.width = '70px';
           th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
           
           // ✅ แทรกก่อน <th> ลบ (index 10) ให้แน่ใจว่า "ชื่อ" อยู่ index 2 ตลอด
