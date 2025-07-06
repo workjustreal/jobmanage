@@ -24,7 +24,7 @@
         text-align: center;
         padding: 4px;
       }
-      input[type="number"] {
+      input[type="text"] {
         width: 40px;
         text-align: center;
       }
@@ -50,7 +50,7 @@
             <tr>
               <th style="width: 50px;"></th>
               <th style="width: 50px;"></th>
-              <th style="min-width: 150px; width: 150px !important;">ชื่อ</th>
+              <th style="min-width: 70px; width: 70px !important;">ชื่อ</th>
               <th style="width: 120px;">จันทร์</th>
               <th style="width: 120px;">อังคาร</th>
               <th style="width: 120px;">พุธ</th>
@@ -79,7 +79,7 @@
           <div class="modal-body">
             <div class="mb-3">
               <label for="rowValue" class="form-label">กรอกค่าที่ต้องการ:</label>
-              <input type="number" class="form-control" id="rowValue" min="0" value="0">
+              <input type="text" class="form-control" id="rowValue" min="0" value="0">
             </div>
           </div>
           <div class="modal-footer">
@@ -162,13 +162,13 @@
         // ช่องชื่อ
         const cell2 = newRow.insertCell(2);
         // cell2.innerHTML = `<input type="text" class="form-control w-100" placeholder="ชื่อ">`;
-        cell2.innerHTML = '<input type="text" class="form-control w-100" placeholder="ชื่อ" style="min-width:150px;">';
+        cell2.innerHTML = '<input type="text" class="form-control w-100" placeholder="ชื่อ" style="min-width:70px;">';
 
 
         // ช่องวันจันทร์-อาทิตย์ (7 วัน)
         for (let i = 0; i < 7; i++) {
           const cell = newRow.insertCell(i + 3); // index 3 ถึง 9
-          cell.innerHTML = `<input type="number" class="form-control w-100" value="0">`;
+          cell.innerHTML = `<input type="text" class="form-control w-100" value="0">`;
         }
 
         // ปุ่มลบ
@@ -245,7 +245,7 @@
 
           for (let i = 0; i < 7; i++) {
             const cell = newRow.insertCell(i + 3);
-            cell.innerHTML = `<input type="number" class="form-control w-100" value="${item.numbers[i]}">`;
+            cell.innerHTML = `<input type="text" class="form-control w-100" value="${item.numbers[i]}">`;
           }
 
           const cellLast = newRow.insertCell(10);
