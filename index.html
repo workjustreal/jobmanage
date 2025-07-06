@@ -112,21 +112,24 @@
       }
 
       function renderWeekHeader(startDate) {
-        while (weekHeader.children.length > 2) {
-          weekHeader.removeChild(weekHeader.children[2]);
-        }
+  const baseCells = 2; // คอลัมน์ ลำดับ + ชื่อ
+  const lastCell = 1;  // คอลัมน์ลบ (❌)
 
-        const current = new Date(startDate);
-        for (let i = 0; i < 7; i++) {
-          const dayName = thaiDays[current.getDay()];
-          const th = document.createElement('th');
-          th.style.width = "150px";
-          th.textContent = `${dayName} ${formatDate(current)}`;
-          weekHeader.insertBefore(th, weekHeader.children[weekHeader.children.length - 1]);
-          current.setDate(current.getDate() + 1);
-        }
-      }
+  // ลบคอลัมน์วันก่อนหน้า (เหลือแค่ ลำดับ, ชื่อ, ❌)
+  while (weekHeader.children.length > baseCells + lastCell) {
+    weekHeader.removeChild(weekHeader.children[baseCells]);
+  }
 
+  const current = new Date(startDate);
+  for (let i = 0; i < 7; i++) {
+    const dayName = thaiDays[current.getDay()];
+    const th = document.createElement('th');
+    th.style.width = "150px";
+    th.textContent = `${dayName} ${formatDate(current)}`;
+    weekHeader.insertBefore(th, weekHeader.children[weekHeader.children.length - 1]);
+    current.setDate(current.getDate() + 1);
+  }
+}
       function addRow() {
         const tbody = document.getElementById("tableBody");
         const rowCount = tbody.rows.length;
