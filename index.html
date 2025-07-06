@@ -12,13 +12,6 @@
       body {
         font-family: 'Kanit', sans-serif;
       }
-      td:first-child {
-        background-color: #f8f9fa;
-        font-weight: bold;
-      }
-      td:first-child:hover {
-        background-color: #e9ecef;
-      }
       .drag-handle {
         cursor: grab;
         user-select: none;
@@ -55,15 +48,16 @@
         <table class="table table-striped">
           <thead id="weekHeader">
             <tr>
-              <th style="width: 70px;">ลำดับ</th>
-              <th style="width: 200px;">ชื่อ</th>
-              <th style="width: 100px;">จันทร์</th>
-              <th style="width: 100px;">อังคาร</th>
-              <th style="width: 100px;">พุธ</th>
-              <th style="width: 100px;">พฤหัส</th>
-              <th style="width: 100px;">ศุกร์</th>
-              <th style="width: 100px;">เสาร์</th>
-              <th style="width: 100px;">อาทิตย์</th>
+              <th style="width: 50px;"></th>
+              <th style="width: 50px;"></th>
+              <th style="width: 150px;">ชื่อ</th>
+              <th style="width: 120px;">จันทร์</th>
+              <th style="width: 120px;">อังคาร</th>
+              <th style="width: 120px;">พุธ</th>
+              <th style="width: 120px;">พฤหัส</th>
+              <th style="width: 120px;">ศุกร์</th>
+              <th style="width: 120px;">เสาร์</th>
+              <th style="width: 120px;">อาทิตย์</th>
               <th style="width: 50px;"></th>
             </tr>
           </thead>
@@ -75,13 +69,36 @@
     <button class="btn btn-primary mb-2" onclick="saveDataToStorage()">💾 บันทึกข้อมูล</button>
     <button class="btn btn-success mb-2" onclick="saveAndOpenPrintView()">📷 เซฟตารางเป็นรูปภาพ</button>
 
+    <div class="modal fade" id="numberModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">กำหนดค่าทั้งแถว</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="rowValue" class="form-label">กรอกค่าที่ต้องการ:</label>
+              <input type="number" class="form-control" id="rowValue" min="0" value="0">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="button" class="btn btn-primary" id="confirmRowValue">ตกลง</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
-      const weekSelect = document.getElementById('weekSelect');
-      const weekHeader = document.getElementById('weekHeader').querySelector('tr');
       const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+
+      function formatDate(d) {
+        return d.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
+      }
 
       function getMonday(date) {
         const d = new Date(date);
@@ -89,10 +106,6 @@
         const diff = d.getDate() - ((day + 6) % 7);
         d.setDate(diff);
         return d;
-      }
-
-      function formatDate(d) {
-        return d.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
       }
 
       function generateWeeks(range = 4) {
@@ -112,46 +125,56 @@
       }
 
       function renderWeekHeader(startDate) {
-  const baseCells = 2; // คอลัมน์ ลำดับ + ชื่อ
-  const lastCell = 1;  // คอลัมน์ลบ (❌)
+        const weekHeader = document.getElementById('weekHeader').querySelector('tr');
 
-  // ลบคอลัมน์วันก่อนหน้า (เหลือแค่ ลำดับ, ชื่อ, ❌)
-  while (weekHeader.children.length > baseCells + lastCell) {
-    weekHeader.removeChild(weekHeader.children[baseCells]);
-  }
+        // 🔁 ลบหัวตารางวันเดิม: คอลัมน์ 3 ถึง 9 (7 วัน)
+        for (let i = 0; i < 7; i++) {
+          weekHeader.removeChild(weekHeader.children[3]); // ลบที่ index 3 ซ้ำ 7 ครั้ง
+        }
 
-  const current = new Date(startDate);
-  for (let i = 0; i < 7; i++) {
-    const dayName = thaiDays[current.getDay()];
-    const th = document.createElement('th');
-    th.style.width = "150px";
-    th.textContent = `${dayName} ${formatDate(current)}`;
-    weekHeader.insertBefore(th, weekHeader.children[weekHeader.children.length - 1]);
-    current.setDate(current.getDate() + 1);
-  }
-}
+        // ➕ เพิ่มวันใหม่ 7 วัน
+        const current = new Date(startDate);
+        for (let i = 0; i < 7; i++) {
+          const th = document.createElement('th');
+          th.style.width = '120px';
+          th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
+          
+          // ✅ แทรกก่อน <th> ลบ (index 10) ให้แน่ใจว่า "ชื่อ" อยู่ index 2 ตลอด
+            weekHeader.insertBefore(th, weekHeader.children[3 + i]);
+          current.setDate(current.getDate() + 1);
+        }
+      }
+
+
       function addRow() {
         const tbody = document.getElementById("tableBody");
         const rowCount = tbody.rows.length;
         const newRow = tbody.insertRow();
 
+        // ลำดับ (ปุ่มกดเปิด modal)
         const cell0 = newRow.insertCell(0);
-        cell0.innerHTML = `
-          <span class="drag-handle me-2">☰</span>
-          <span class="row-number">${rowCount + 1}</span>
-        `;
+        cell0.innerHTML = `<button class="btn btn-sm btn-outline-secondary" onclick="openModal(this)">${rowCount + 1}</button>`;
 
+        // ปุ่มลาก
         const cell1 = newRow.insertCell(1);
-        cell1.innerHTML = '<input type="text" class="form-control w-100" placeholder="ชื่อ">';
+        cell1.innerHTML = `<span class="drag-handle" style="cursor:move;">☰</span>`;
 
+        // ช่องชื่อ
+        const cell2 = newRow.insertCell(2);
+        cell2.innerHTML = `<input type="text" class="form-control w-100" placeholder="ชื่อ">`;
+
+        // ช่องวันจันทร์-อาทิตย์ (7 วัน)
         for (let i = 0; i < 7; i++) {
-          const cell = newRow.insertCell(i + 2);
-          cell.innerHTML = '<input type="number" class="form-control w-100" value="0">';
+          const cell = newRow.insertCell(i + 3); // index 3 ถึง 9
+          cell.innerHTML = `<input type="number" class="form-control w-100" value="0">`;
         }
 
-        const cellLast = newRow.insertCell(9);
-        cellLast.innerHTML = '<button class="btn" onclick="deleteRow(this)">❌</button>';
+        // ปุ่มลบ
+        const cellLast = newRow.insertCell(10);
+        cellLast.innerHTML = `<button class="btn text-danger" onclick="deleteRow(this)">❌</button>`;
       }
+
+
 
       function deleteRow(button) {
         const row = button.parentNode.parentNode;
@@ -162,17 +185,34 @@
       function updateRowNumbers() {
         const rows = document.querySelectorAll("#tableBody tr");
         rows.forEach((tr, index) => {
-          tr.querySelector('.row-number').textContent = index + 1;
+          const btn = tr.cells[0].querySelector('button');
+          if (btn) btn.textContent = index + 1;
         });
       }
+
+      let currentEditingRow = null;
+      function openModal(btn) {
+        currentEditingRow = btn.parentNode.parentNode;
+        const modal = new bootstrap.Modal(document.getElementById('numberModal'));
+        modal.show();
+      }
+
+      document.getElementById("confirmRowValue").addEventListener("click", function() {
+        const value = document.getElementById("rowValue").value;
+        if (currentEditingRow) {
+          const inputs = currentEditingRow.querySelectorAll("td input[type='number']");
+          inputs.forEach(input => input.value = value);
+          bootstrap.Modal.getInstance(document.getElementById('numberModal')).hide();
+        }
+      });
 
       function saveDataToStorage() {
         const tbody = document.getElementById("tableBody");
         const data = [];
         for (let row of tbody.rows) {
-          const name = row.cells[1].querySelector('input').value;
+          const name = row.cells[2].querySelector('input').value;
           const numbers = [];
-          for (let i = 2; i <= 8; i++) {
+          for (let i = 3; i <= 9; i++) {
             numbers.push(row.cells[i].querySelector('input').value);
           }
           data.push({ name, numbers });
@@ -191,21 +231,22 @@
 
         data.forEach((item, index) => {
           const newRow = tbody.insertRow();
-          const cell0 = newRow.insertCell(0);
-          cell0.innerHTML = `
-            <span class="drag-handle me-2">☰</span>
-            <span class="row-number">${index + 1}</span>
-          `;
 
-          const cell1 = newRow.insertCell(1);
+          const cell0 = newRow.insertCell(0);
+          cell0.innerHTML = `<button class="btn btn-sm btn-outline-secondary" onclick="openModal(this)">${index + 1}</button>`;
+
+          const cellDrag = newRow.insertCell(1);
+          cellDrag.innerHTML = `<span class="drag-handle">☰</span>`;
+
+          const cell1 = newRow.insertCell(2);
           cell1.innerHTML = `<input type="text" class="form-control w-100" value="${item.name}">`;
 
           for (let i = 0; i < 7; i++) {
-            const cell = newRow.insertCell(i + 2);
+            const cell = newRow.insertCell(i + 3);
             cell.innerHTML = `<input type="number" class="form-control w-100" value="${item.numbers[i]}">`;
           }
 
-          const cellLast = newRow.insertCell(9);
+          const cellLast = newRow.insertCell(10);
           cellLast.innerHTML = '<button class="btn" onclick="deleteRow(this)">❌</button>';
         });
         updateRowNumbers();
@@ -217,6 +258,7 @@
       }
 
       window.addEventListener('load', function () {
+        const weekSelect = document.getElementById('weekSelect');
         const weeks = generateWeeks(4);
         weeks.forEach((w, i) => {
           const opt = document.createElement('option');
@@ -234,9 +276,15 @@
 
         new Sortable(document.getElementById('tableBody'), {
           animation: 150,
-          handle: '.drag-handle',
-          onEnd: updateRowNumbers
+          handle: '.drag-handle', // ✅ ต้องระบุไว้
+          onEnd: function () {
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach((tr, index) => {
+              tr.cells[0].querySelector("button").textContent = index + 1;
+            });
+          }
         });
+
       });
     </script>
   </body>
