@@ -209,19 +209,33 @@
       });
 
       function saveDataToStorage() {
-        const tbody = document.getElementById("tableBody");
-        const data = [];
-        for (let row of tbody.rows) {
-          const name = row.cells[2].querySelector('input').value;
-          const numbers = [];
-          for (let i = 3; i <= 9; i++) {
-            numbers.push(row.cells[i].querySelector('input').value);
-          }
-          data.push({ name, numbers });
-        }
-        localStorage.setItem('tableData', JSON.stringify(data));
-        alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-      }
+  const tbody = document.getElementById("tableBody");
+  const data = [];
+
+  for (let row of tbody.rows) {
+    const name = row.cells[2].querySelector('input').value;
+    const numbers = [];
+    for (let i = 3; i <= 9; i++) {
+      numbers.push(row.cells[i].querySelector('input').value);
+    }
+    data.push({ name, numbers });
+  }
+
+  const weekIndex = document.getElementById('weekSelect').value;
+  const weeks = generateWeeks(4);
+  const selectedStartDate = weeks[weekIndex].start;
+
+  // เก็บข้อมูลทั้งหมด
+  const fullData = {
+    rows: data,
+    selectedWeekIndex: parseInt(weekIndex),
+    selectedStartDate: selectedStartDate.toISOString()
+  };
+
+  localStorage.setItem('tableData', JSON.stringify(fullData));
+  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+}
+
 
       function loadDataFromStorage() {
         const stored = localStorage.getItem('tableData');

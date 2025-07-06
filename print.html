@@ -1,145 +1,126 @@
 <!DOCTYPE html>
 <html lang="th">
-  <head>
-    <meta charset="UTF-8" />
-    <title>พิมพ์ตารางงาน</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" />
-    <style>
-      body {
-        font-family: 'Kanit', sans-serif;
-        padding: 20px;
+<head>
+  <meta charset="UTF-8">
+  <title>พิมพ์ตารางงาน</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      padding: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    @media print {
+      button {
+        display: none;
       }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-      th, td {
-        border: 1px solid #a1a1a1 !important;
-        padding: 4px;
-        text-align: center;
-      }
-      th {
-        background-color: #f2f2f2;
-      }
-      @media print {
-        button {
-          display: none;
-        }
-      }
-      #saveImageBtn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="table-container"></div>
+    }
+  </style>
+</head>
+<body>
+  <div id="table-container"></div>
 
-    <button id="saveImageBtn">💾 บันทึกเป็นรูปภาพ</button>
+  <button id="saveImageBtn"
+    style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+    บันทึกเป็นรูปภาพ
+  </button>
 
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script>
-      const stored = localStorage.getItem('tableData');
-      const selectedWeekIndex = 4; // ค่าที่คุณใช้ default ใน index.html
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
 
-      if (!stored) {
-        document.getElementById('table-container').innerHTML = '<p>ไม่พบข้อมูล</p>';
-        throw new Error("ไม่มีข้อมูลใน localStorage");
-      }
+    function formatDate(d) {
+      if (!d) return '';
+      const date = new Date(d);
+      return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
+    }
 
-      const data = JSON.parse(stored);
+    const storedData = localStorage.getItem('tableData');
+    if (!storedData) {
+      document.getElementById('table-container').innerHTML = '<p>ไม่พบข้อมูล</p>';
+      throw new Error("ไม่มีข้อมูลใน localStorage");
+    }
 
-      function formatDate(d) {
-        const date = new Date(d);
-        return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
-      }
+    const data = JSON.parse(storedData);
+    const container = document.getElementById('table-container');
 
-      function getMonday(date) {
-        const d = new Date(date);
-        const day = d.getDay();
-        const diff = d.getDate() - ((day + 6) % 7);
-        d.setDate(diff);
-        return d;
-      }
+    const table = document.createElement('table');
 
-      function generateWeeks(range = 4) {
-        const now = new Date();
-        const monday = getMonday(now);
-        const options = [];
-        for (let i = -range; i <= range; i++) {
-          const start = new Date(monday);
-          start.setDate(start.getDate() + i * 7);
-          const end = new Date(start);
-          end.setDate(start.getDate() + 6);
-          options.push({ start, label: `${formatDate(start)} - ${formatDate(end)}` });
-        }
-        return options;
-      }
+    // สร้างหัวตาราง
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
 
-      const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
-      const weeks = generateWeeks(4);
-      const selectedWeek = weeks[selectedWeekIndex];
+    headRow.innerHTML = `
+      <th style="width: 50px;">ลำดับ</th>
+      <th style="width: 120px;">ชื่อ</th>
+    `;
 
-      const container = document.getElementById('table-container');
-      const table = document.createElement('table');
-      table.className = 'table table-bordered';
+    const startDate = new Date(data.selectedStartDate); // ✅ ใช้วันที่ที่บันทึกไว้
+    const current = new Date(startDate);
 
-      // สร้าง thead
-      const thead = document.createElement('thead');
-      const headRow = document.createElement('tr');
-      headRow.innerHTML = `
-        <th style="width: 50px;">ลำดับ</th>
-        <th style="min-width: 100px;">ชื่อ</th>
-      `;
+    for (let i = 0; i < 7; i++) {
+      const th = document.createElement('th');
+      th.style.minWidth = "80px";
+      th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
+      headRow.appendChild(th);
+      current.setDate(current.getDate() + 1);
+    }
 
-      const current = new Date(selectedWeek.start);
-      for (let i = 0; i < 7; i++) {
-        const th = document.createElement('th');
-        th.style.minWidth = "80px";
-        th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
-        headRow.appendChild(th);
-        current.setDate(current.getDate() + 1);
-      }
+    thead.appendChild(headRow);
+    table.appendChild(thead);
 
-      thead.appendChild(headRow);
-      table.appendChild(thead);
+    // สร้างข้อมูลแถว
+    const tbody = document.createElement('tbody');
 
-      // สร้าง tbody
-      const tbody = document.createElement('tbody');
-      data.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${item.name}</td>
-        `;
-        item.numbers.forEach(num => {
-          row.innerHTML += `<td>${num}</td>`;
-        });
-        tbody.appendChild(row);
+    data.rows.forEach((row, index) => {
+      const tr = document.createElement('tr');
+
+      const tdIndex = document.createElement('td');
+      tdIndex.textContent = index + 1;
+      tr.appendChild(tdIndex);
+
+      const tdName = document.createElement('td');
+      tdName.textContent = row.name;
+      tr.appendChild(tdName);
+
+      row.numbers.forEach(num => {
+        const td = document.createElement('td');
+        td.textContent = num;
+        tr.appendChild(td);
       });
 
-      table.appendChild(tbody);
-      container.appendChild(table);
+      tbody.appendChild(tr);
+    });
 
-      // บันทึกรูป
-      document.getElementById('saveImageBtn').addEventListener('click', () => {
-        html2canvas(table).then(canvas => {
-          const link = document.createElement('a');
-          link.download = 'ตารางงาน.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        });
+    table.appendChild(tbody);
+    container.appendChild(table);
+
+    // ปุ่มบันทึกรูปภาพ
+    document.getElementById('saveImageBtn').addEventListener('click', () => {
+      html2canvas(table).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'ตารางงาน.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
       });
+    });
 
-      // บันทึกอัตโนมัติหลังโหลด
-      setTimeout(() => {
-        document.getElementById('saveImageBtn').click();
-      }, 1000);
-    </script>
-  </body>
+    // บันทึกอัตโนมัติเมื่อโหลด
+    setTimeout(() => {
+      document.getElementById('saveImageBtn').click();
+    }, 1000);
+  </script>
+</body>
 </html>
