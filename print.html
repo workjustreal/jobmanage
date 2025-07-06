@@ -1,101 +1,132 @@
 <!DOCTYPE html>
 <html lang="th">
   <head>
-    <meta charset="UTF-8">
-    <title>บันทึกตาราง</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <title>พิมพ์ตารางงาน</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" />
     <style>
-    body { font-family: 'Sarabun', sans-serif; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    th { background-color: #f2f2f2; }
-    @media print { button { display: none; } }
-  </style>
-  </head>
-  <body>
-    <div id="table-container">
-      <!-- ตารางจะถูกสร้างโดย JavaScript -->
-    </div>
-
-    <button id="saveImageBtn"
-      style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-      บันทึกเป็นรูปภาพ
-    </button>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script>
-    // โหลดข้อมูลจาก localStorage
-    const storedData = localStorage.getItem('tableData');
-    const weekSelect = document.getElementById('weekSelect');
-    
-    if (storedData) {
-      const data = JSON.parse(storedData);
-      const container = document.getElementById('table-container');
-      
-      // สร้างตาราง
-      const table = document.createElement('table');
-      
-      // สร้างหัวตาราง (วันที่)
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      
-      // เพิ่มคอลัมน์ลำดับและชื่อ
-      headerRow.innerHTML = `
-        <th style="width: 50px;">ลำดับ</th>
-        <th style="width: 120px;">ชื่อ</th>
-      `;
-      
-      // เพิ่มคอลัมน์วัน (7 วัน)
-      if (data.selectedWeekIndex !== undefined) {
-        const weeks = generateWeeks(4);
-        const startDate = weeks[data.selectedWeekIndex].start;
-        const current = new Date(startDate);
-        
-        for (let i = 0; i < 7; i++) {
-          const dayName = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'][current.getDay()];
-          const th = document.createElement('th');
-          th.style.width = "150px";
-          th.textContent = `${dayName} ${formatDate(current)}`;
-          headerRow.appendChild(th);
-          current.setDate(current.getDate() + 1);
+      body {
+        font-family: 'Kanit', sans-serif;
+        padding: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 4px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      @media print {
+        button {
+          display: none;
         }
       }
-      
-      thead.appendChild(headerRow);
+      #saveImageBtn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="table-container"></div>
+
+    <button id="saveImageBtn">💾 บันทึกเป็นรูปภาพ</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      const stored = localStorage.getItem('tableData');
+      const selectedWeekIndex = 4; // ค่าที่คุณใช้ default ใน index.html
+
+      if (!stored) {
+        document.getElementById('table-container').innerHTML = '<p>ไม่พบข้อมูล</p>';
+        throw new Error("ไม่มีข้อมูลใน localStorage");
+      }
+
+      const data = JSON.parse(stored);
+
+      function formatDate(d) {
+        const date = new Date(d);
+        return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
+      }
+
+      function getMonday(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - ((day + 6) % 7);
+        d.setDate(diff);
+        return d;
+      }
+
+      function generateWeeks(range = 4) {
+        const now = new Date();
+        const monday = getMonday(now);
+        const options = [];
+        for (let i = -range; i <= range; i++) {
+          const start = new Date(monday);
+          start.setDate(start.getDate() + i * 7);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+          options.push({ start, label: `${formatDate(start)} - ${formatDate(end)}` });
+        }
+        return options;
+      }
+
+      const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+      const weeks = generateWeeks(4);
+      const selectedWeek = weeks[selectedWeekIndex];
+
+      const container = document.getElementById('table-container');
+      const table = document.createElement('table');
+      table.className = 'table table-bordered';
+
+      // สร้าง thead
+      const thead = document.createElement('thead');
+      const headRow = document.createElement('tr');
+      headRow.innerHTML = `
+        <th style="width: 50px;">ลำดับ</th>
+        <th style="min-width: 100px;">ชื่อ</th>
+      `;
+
+      const current = new Date(selectedWeek.start);
+      for (let i = 0; i < 7; i++) {
+        const th = document.createElement('th');
+        th.style.minWidth = "80px";
+        th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
+        headRow.appendChild(th);
+        current.setDate(current.getDate() + 1);
+      }
+
+      thead.appendChild(headRow);
       table.appendChild(thead);
-      
-      // สร้างข้อมูลในตาราง
+
+      // สร้าง tbody
       const tbody = document.createElement('tbody');
-      
-      data.rows.forEach((row, index) => {
-        const tr = document.createElement('tr');
-        
-        // ลำดับ
-        const tdIndex = document.createElement('td');
-        tdIndex.textContent = index + 1;
-        tr.appendChild(tdIndex);
-        
-        // ชื่อ
-        const tdName = document.createElement('td');
-        tdName.textContent = row.name;
-        tr.appendChild(tdName);
-        
-        // ตัวเลข 7 วัน
-        row.numbers.forEach(num => {
-          const tdNum = document.createElement('td');
-          tdNum.textContent = num;
-          tr.appendChild(tdNum);
+      data.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${item.name}</td>
+        `;
+        item.numbers.forEach(num => {
+          row.innerHTML += `<td>${num}</td>`;
         });
-        
-        tbody.appendChild(tr);
+        tbody.appendChild(row);
       });
-      
+
       table.appendChild(tbody);
       container.appendChild(table);
-      
-      // บันทึกรูปภาพอัตโนมัติ
+
+      // บันทึกรูป
       document.getElementById('saveImageBtn').addEventListener('click', () => {
         html2canvas(table).then(canvas => {
           const link = document.createElement('a');
@@ -104,44 +135,11 @@
           link.click();
         });
       });
-      
-      // บันทึกรูปภาพอัตโนมัติเมื่อโหลดหน้า (ถ้าต้องการ)
+
+      // บันทึกอัตโนมัติหลังโหลด
       setTimeout(() => {
         document.getElementById('saveImageBtn').click();
       }, 1000);
-    } else {
-      document.getElementById('table-container').innerHTML = '<p>ไม่พบข้อมูล</p>';
-    }
-    
-    // ฟังก์ชันช่วยเหลือ
-    function formatDate(d) {
-      if (!d) return '';
-      const date = new Date(d);
-      return date.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
-    }
-    
-    function generateWeeks(range = 4) {
-      const now = new Date();
-      const monday = getMonday(now);
-      const options = [];
-      
-      for (let i = -range; i <= range; i++) {
-        const start = new Date(monday);
-        start.setDate(start.getDate() + i * 7);
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
-        options.push({ start, label: `${formatDate(start)} - ${formatDate(end)}` });
-      }
-      return options;
-    }
-    
-    function getMonday(date) {
-      const d = new Date(date);
-      const day = d.getDay();
-      const diff = d.getDate() - ((day + 6) % 7);
-      d.setDate(diff);
-      return d;
-    }
-  </script>
+    </script>
   </body>
 </html>
