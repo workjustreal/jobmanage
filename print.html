@@ -63,7 +63,7 @@
     const headRow = document.createElement('tr');
 
     headRow.innerHTML = `
-      <th style="width: 50px;">ลำดับ</th>
+      <th style="width: 20px;">#</th>
       <th style="width: 120px;">ชื่อ</th>
     `;
 
@@ -73,6 +73,7 @@
     for (let i = 0; i < 7; i++) {
       const th = document.createElement('th');
       th.style.minWidth = "80px";
+      th.style.fontSize = "20px";
       th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
       headRow.appendChild(th);
       current.setDate(current.getDate() + 1);
