@@ -2,341 +2,649 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8">
-    <title>จัดตารางงาน (Job)</title>
+    <title>จัดตารางงาน</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
       rel="stylesheet">
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap">
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
     <style>
+      :root {
+        --ink: #1c1c1e;
+        --ink-soft: #5b5b60;
+        --line: #e6e3dc;
+        --line-soft: #f0eee8;
+        --paper: #faf9f6;
+        --card: #ffffff;
+        --accent: #2f4858;
+        --accent-soft: #eef1f3;
+        --shadow: 0 1px 2px rgba(28,28,30,.04), 0 6px 24px rgba(28,28,30,.06);
+        --radius: 16px;
+      }
+
+      * { -webkit-tap-highlight-color: transparent; }
+
       body {
         font-family: 'Kanit', sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        font-weight: 300;
+        padding-bottom: calc(96px + env(safe-area-inset-bottom));
       }
+
+      /* ---------- Header ---------- */
+      .app-head {
+        padding: 28px 20px 8px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .app-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .22em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+      .app-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        letter-spacing: -.01em;
+        margin: 0;
+      }
+
+      .week-bar {
+        max-width: 1100px;
+        margin: 18px auto 8px;
+        padding: 0 20px;
+      }
+      .week-bar label {
+        font-size: .8rem;
+        font-weight: 500;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+      }
+      #weekSelect {
+        font-family: inherit;
+        font-weight: 400;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        background-color: var(--card);
+        color: var(--ink);
+        box-shadow: var(--shadow);
+      }
+      #weekSelect:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+
+      .container-fluid { max-width: 1100px; margin: 0 auto; }
+
+      /* ---------- Desktop table ---------- */
+      .sheet {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin: 14px 20px;
+      }
+      table { border-collapse: collapse; width: 100%; margin: 0; }
+      thead th {
+        background: var(--accent);
+        color: #fff;
+        font-weight: 500;
+        font-size: .82rem;
+        padding: 14px 6px;
+        border: none;
+        white-space: nowrap;
+      }
+      thead th .dow { display: block; font-size: .82rem; }
+      thead th .date { display: block; font-size: .68rem; opacity: .7; font-weight: 300; }
+      tbody td {
+        text-align: center;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--line-soft);
+        vertical-align: middle;
+      }
+      tbody tr:last-child td { border-bottom: none; }
+      tbody tr:hover { background: #fbfaf7; }
+
+      .row-num {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink-soft);
+        font-weight: 500;
+        font-size: .85rem;
+        padding: 0;
+        transition: all .15s ease;
+      }
+      .row-num:hover { border-color: var(--accent); color: var(--accent); }
+
       .drag-handle {
         cursor: grab;
         user-select: none;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-      th, td {
-        text-align: center;
+        color: #c2bfb6;
+        font-size: 1.1rem;
         padding: 4px;
       }
-      input[type="text"] {
-        width: 40px;
+      .drag-handle:active { cursor: grabbing; }
+
+      .cell-input {
+        font-family: inherit;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--card);
+        text-align: center;
+        font-weight: 400;
+        color: var(--ink);
+        padding: 8px 4px;
+        width: 100%;
+        min-width: 52px;
+        transition: border-color .15s, box-shadow .15s;
+      }
+      .cell-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      .name-input { text-align: left; min-width: 90px; font-weight: 400; }
+      .name-input::placeholder { color: #c2bfb6; }
+
+      .del-btn {
+        border: none; background: none;
+        color: #c98b8b; font-size: 1rem;
+        padding: 6px; border-radius: 8px;
+        transition: background .15s;
+      }
+      .del-btn:hover { background: #fbedec; }
+
+      .sortable-ghost { opacity: .4; }
+      .sortable-chosen { box-shadow: var(--shadow); }
+
+      /* ---------- Mobile cards ---------- */
+      .cards { display: none; padding: 0 16px; }
+      .person-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      .card-top {
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .card-num {
+        flex: 0 0 auto;
+        width: 30px; height: 30px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink-soft);
+        font-weight: 600; font-size: .82rem;
+        display: flex; align-items: center; justify-content: center;
+        padding: 0;
+      }
+      .card-name {
+        flex: 1 1 auto;
+        font-family: inherit;
+        border: none;
+        border-bottom: 1px solid transparent;
+        background: transparent;
+        font-size: 1.05rem; font-weight: 500;
+        color: var(--ink);
+        padding: 4px 2px;
+      }
+      .card-name:focus {
+        outline: none;
+        border-bottom-color: var(--accent);
+      }
+      .card-name::placeholder { color: #c2bfb6; font-weight: 300; }
+      .card-drag { color: #c2bfb6; font-size: 1.15rem; padding: 4px; cursor: grab; }
+      .card-del {
+        border: none; background: none;
+        color: #c98b8b; font-size: 1rem; padding: 6px;
+      }
+
+      .day-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background: var(--line-soft);
+      }
+      .day-cell {
+        background: var(--card);
+        padding: 9px 2px 11px;
         text-align: center;
       }
-      input[type=number]::-webkit-inner-spin-button,
-      input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+      .day-label {
+        font-size: .66rem;
+        color: var(--ink-soft);
+        font-weight: 500;
+        margin-bottom: 5px;
       }
-      input[type=number] {
-        -moz-appearance: textfield;
+      .day-date { font-size: .58rem; color: #b7b4ab; font-weight: 300; }
+      .day-input {
+        font-family: inherit;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 500;
+        font-size: .95rem;
+        color: var(--ink);
+        padding: 7px 0;
+        margin-top: 4px;
       }
+      .day-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+
+      /* ---------- Action bar ---------- */
+      .action-bar {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--line);
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+        display: flex; gap: 8px;
+        z-index: 20;
+        max-width: 1100px; margin: 0 auto;
+      }
+      .act {
+        flex: 1;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: .9rem;
+        border-radius: 12px;
+        padding: 13px 8px;
+        border: 1px solid transparent;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        transition: transform .1s, filter .15s;
+      }
+      .act:active { transform: scale(.97); }
+      .act-ghost { background: var(--card); border-color: var(--line); color: var(--ink); }
+      .act-ghost:hover { border-color: var(--accent); }
+      .act-dark { background: var(--accent); color: #fff; }
+      .act-dark:hover { filter: brightness(1.08); }
+      .act .lbl-long { display: inline; }
+
+      @media (max-width: 560px) {
+        .act { flex-direction: column; gap: 3px; font-size: .7rem; padding: 10px 4px; }
+      }
+
+      /* ---------- Breakpoint switch ---------- */
+      @media (max-width: 820px) {
+        .sheet { display: none; }
+        .cards { display: block; }
+        .app-head { padding-top: 22px; }
+        .app-title { font-size: 1.4rem; }
+      }
+
+      .toast-mini {
+        position: fixed;
+        left: 50%; transform: translateX(-50%);
+        bottom: calc(96px + env(safe-area-inset-bottom));
+        background: var(--ink); color: #fff;
+        padding: 10px 18px; border-radius: 999px;
+        font-size: .85rem; font-weight: 400;
+        box-shadow: var(--shadow);
+        opacity: 0; pointer-events: none;
+        transition: opacity .25s, transform .25s;
+        z-index: 50;
+      }
+      .toast-mini.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
     </style>
   </head>
   <body>
-    <div class="mb-3 px-5 mt-2">
-      <label for="weekSelect" class="form-label">เลือกสัปดาห์</label>
+    <header class="app-head">
+      <div class="app-eyebrow">ตารางงานรายสัปดาห์</div>
+      <h1 class="app-title">จัดตารางงาน</h1>
+    </header>
+
+    <div class="week-bar">
+      <label for="weekSelect" class="form-label d-block">เลือกสัปดาห์</label>
       <select id="weekSelect" class="form-select"></select>
     </div>
+
     <div class="container-fluid">
-      <div id="capture" class="table-responsive">
-        <table class="table table-striped">
-          <thead id="weekHeader">
-            <tr>
-              <th style="width: 50px;"></th>
-              <th style="width: 50px;"></th>
-              <th style="min-width: 70px; width: 70px !important;">ชื่อ</th>
-              <th style="min-width: 70px; width: 70px !important;">จันทร์</th>
-              <th style="min-width: 70px; width: 70px !important;">อังคาร</th>
-              <th style="min-width: 70px; width: 70px !important;">พุธ</th>
-              <th style="min-width: 70px; width: 70px !important;">พฤหัส</th>
-              <th style="min-width: 70px; width: 70px !important;">ศุกร์</th>
-              <th style="min-width: 70px; width: 70px !important;">เสาร์</th>
-              <th style="min-width: 70px; width: 70px !important;">อาทิตย์</th>
-              <th style="width: 50px;"></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+      <div id="capture">
+        <!-- Desktop / tablet -->
+        <div class="sheet table-responsive">
+          <table>
+            <thead id="weekHeader">
+              <tr>
+                <th style="width:44px;"></th>
+                <th style="width:36px;"></th>
+                <th style="min-width:90px;">ชื่อ</th>
+                <th data-day><span class="dow">จันทร์</span></th>
+                <th data-day><span class="dow">อังคาร</span></th>
+                <th data-day><span class="dow">พุธ</span></th>
+                <th data-day><span class="dow">พฤหัส</span></th>
+                <th data-day><span class="dow">ศุกร์</span></th>
+                <th data-day><span class="dow">เสาร์</span></th>
+                <th data-day><span class="dow">อาทิตย์</span></th>
+                <th style="width:44px;"></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Mobile -->
+        <div class="cards" id="cardsBody"></div>
       </div>
     </div>
-    <button class="btn btn-info mb-2" onclick="addRow()">➕ เพิ่มแถว</button>
-    <button class="btn btn-primary mb-2" onclick="saveDataToStorage()">💾
-      บันทึกข้อมูล</button>
-    <button class="btn btn-success mb-2" onclick="saveAndOpenPrintView()">📷
-      เซฟตารางเป็นรูปภาพ</button>
+
+    <div class="action-bar">
+      <button class="act act-ghost" onclick="addRow()">
+        <span>＋</span><span class="lbl">เพิ่มแถว</span>
+      </button>
+      <button class="act act-ghost" onclick="saveDataToStorage()">
+        <span>💾</span><span class="lbl">บันทึก</span>
+      </button>
+      <button class="act act-dark" onclick="saveAndOpenPrintView()">
+        <span>📷</span><span class="lbl">เซฟรูป</span>
+      </button>
+    </div>
 
     <div class="modal fade" id="numberModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">กำหนดค่าทั้งแถว</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-              aria-label="Close"></button>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border:none;border-radius:18px;font-family:'Kanit',sans-serif;">
+          <div class="modal-header" style="border-bottom:1px solid var(--line-soft);">
+            <h5 class="modal-title" style="font-weight:500;">กำหนดค่าทั้งแถว</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
-              <label for="rowValue"
-                class="form-label">กรอกค่าที่ต้องการ:</label>
-              <input type="text" class="form-control" id="rowValue" min="0"
-                value="0">
-            </div>
+            <label for="rowValue" class="form-label" style="font-weight:400;color:var(--ink-soft);">กรอกค่าที่ต้องการใช้ทั้ง 7 วัน</label>
+            <input type="text" inputmode="numeric" class="form-control" id="rowValue" value="0" style="border-radius:10px;font-family:inherit;">
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary"
-              data-bs-dismiss="modal">ยกเลิก</button>
-            <button type="button" class="btn btn-primary"
-              id="confirmRowValue">ตกลง</button>
+          <div class="modal-footer" style="border-top:1px solid var(--line-soft);">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="font-family:inherit;border-radius:10px;">ยกเลิก</button>
+            <button type="button" class="btn" id="confirmRowValue" style="font-family:inherit;border-radius:10px;background:var(--accent);color:#fff;">ตกลง</button>
           </div>
         </div>
       </div>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <div class="toast-mini" id="toast">บันทึกแล้ว</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
       const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+      const shortDays = ['จ','อ','พ','พฤ','ศ','ส','อา']; // Mon-Sun order
+      const fullDaysMon = ['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+      let currentStart = null;
 
       function formatDate(d) {
         return d.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
       }
-
       function getMonday(date) {
         const d = new Date(date);
         const day = d.getDay();
-        const diff = d.getDate() - ((day + 6) % 7);
-        d.setDate(diff);
+        d.setDate(d.getDate() - ((day + 6) % 7));
         return d;
       }
-
       function generateWeeks(range = 4) {
-        const now = new Date();
-        const monday = getMonday(now);
+        const monday = getMonday(new Date());
         const options = [];
-
         for (let i = -range; i <= range; i++) {
           const start = new Date(monday);
           start.setDate(start.getDate() + i * 7);
           const end = new Date(start);
           end.setDate(start.getDate() + 6);
-          options.push({ start, label: `${formatDate(start)} - ${formatDate(end)}` });
+          options.push({ start, label: `${formatDate(start)} – ${formatDate(end)}` });
         }
-
         return options;
       }
 
+      function dayDates(startDate) {
+        const out = [];
+        const cur = new Date(startDate);
+        for (let i = 0; i < 7; i++) {
+          out.push({ dow: fullDaysMon[i], date: formatDate(cur) });
+          cur.setDate(cur.getDate() + 1);
+        }
+        return out;
+      }
+
       function renderWeekHeader(startDate) {
-        const weekHeader = document.getElementById('weekHeader').querySelector('tr');
-
-        // 🔁 ลบหัวตารางวันเดิม: คอลัมน์ 3 ถึง 9 (7 วัน)
-        for (let i = 0; i < 7; i++) {
-          weekHeader.removeChild(weekHeader.children[3]); // ลบที่ index 3 ซ้ำ 7 ครั้ง
-        }
-
-        // ➕ เพิ่มวันใหม่ 7 วัน
-        const current = new Date(startDate);
-        for (let i = 0; i < 7; i++) {
-          const th = document.createElement('th');
-          th.style.width = '70px';
-          th.textContent = `${thaiDays[current.getDay()]} ${formatDate(current)}`;
-          
-          // ✅ แทรกก่อน <th> ลบ (index 10) ให้แน่ใจว่า "ชื่อ" อยู่ index 2 ตลอด
-            weekHeader.insertBefore(th, weekHeader.children[3 + i]);
-          current.setDate(current.getDate() + 1);
-        }
-      }
-
-
-      function addRow() {
-        const tbody = document.getElementById("tableBody");
-        const rowCount = tbody.rows.length;
-        const newRow = tbody.insertRow();
-
-        // ลำดับ (ปุ่มกดเปิด modal)
-        const cell0 = newRow.insertCell(0);
-        cell0.innerHTML = `<button class="btn btn-sm btn-outline-secondary" onclick="openModal(this)">${rowCount + 1}</button>`;
-
-        // ปุ่มลาก
-        const cell1 = newRow.insertCell(1);
-        cell1.innerHTML = `<span class="drag-handle" style="cursor:move;">☰</span>`;
-
-        // ช่องชื่อ
-        const cell2 = newRow.insertCell(2);
-        // cell2.innerHTML = `<input type="text" class="form-control w-100" placeholder="ชื่อ">`;
-        cell2.innerHTML = '<input type="text" class="form-control w-100" placeholder="ชื่อ" style="min-width:70px;">';
-
-
-        // ช่องวันจันทร์-อาทิตย์ (7 วัน)
-        for (let i = 0; i < 7; i++) {
-          const cell = newRow.insertCell(i + 3); // index 3 ถึง 9
-          cell.innerHTML = `<input type="text" class="form-control w-100" value="0">`;
-        }
-
-        // ปุ่มลบ
-        const cellLast = newRow.insertCell(10);
-        cellLast.innerHTML = `<button class="btn text-danger" onclick="deleteRow(this)">❌</button>`;
-      }
-
-
-
-      function deleteRow(button) {
-        const row = button.parentNode.parentNode;
-        row.remove();
-        updateRowNumbers();
-      }
-
-      function updateRowNumbers() {
-        const rows = document.querySelectorAll("#tableBody tr");
-        rows.forEach((tr, index) => {
-          const btn = tr.cells[0].querySelector('button');
-          if (btn) btn.textContent = index + 1;
+        currentStart = new Date(startDate);
+        const cells = document.querySelectorAll('#weekHeader th[data-day]');
+        const dates = dayDates(startDate);
+        cells.forEach((th, i) => {
+          th.innerHTML = `<span class="dow">${dates[i].dow}</span><span class="date">${dates[i].date}</span>`;
+        });
+        // update mobile card date labels
+        document.querySelectorAll('.day-date').forEach((el, idx) => {
+          el.textContent = dates[idx % 7].date;
         });
       }
 
-      let currentEditingRow = null;
-      function openModal(btn) {
-        currentEditingRow = btn.parentNode.parentNode;
-        const modal = new bootstrap.Modal(document.getElementById('numberModal'));
-        modal.show();
+      // ---------- Row builders ----------
+      function buildRowHTML(name, numbers) {
+        const num = numbers || Array(7).fill('0');
+        // desktop row
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><button class="row-num" onclick="openModal(this)">1</button></td>
+          <td><span class="drag-handle">⠿</span></td>
+          <td><input type="text" class="cell-input name-input" placeholder="ชื่อ" value="${name || ''}"></td>
+          ${num.map(v => `<td><input type="text" inputmode="numeric" class="cell-input day-val" value="${v}"></td>`).join('')}
+          <td><button class="del-btn" onclick="deleteRow(this)">✕</button></td>`;
+        return tr;
       }
 
-      document.getElementById("confirmRowValue").addEventListener("click", function() {
-        const value = document.getElementById("rowValue").value;
-        if (currentEditingRow) {
-          const inputs = currentEditingRow.querySelectorAll("td input[type='number']");
-          inputs.forEach(input => input.value = value);
-          bootstrap.Modal.getInstance(document.getElementById('numberModal')).hide();
+      function buildCardHTML(name, numbers) {
+        const num = numbers || Array(7).fill('0');
+        const dates = currentStart ? dayDates(currentStart) : fullDaysMon.map((d,i)=>({dow:d,date:''}));
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.innerHTML = `
+          <div class="card-top">
+            <button class="card-num" onclick="openModal(this)">1</button>
+            <input type="text" class="card-name" placeholder="ใส่ชื่อ" value="${name || ''}">
+            <span class="card-drag">⠿</span>
+            <button class="card-del" onclick="deleteRow(this)">✕</button>
+          </div>
+          <div class="day-grid">
+            ${num.map((v,i) => `
+              <div class="day-cell">
+                <div class="day-label">${shortDays[i]}</div>
+                <div class="day-date">${dates[i].date}</div>
+                <input type="text" inputmode="numeric" class="day-input day-val" value="${v}">
+              </div>`).join('')}
+          </div>`;
+        return card;
+      }
+
+      // keep desktop + mobile in sync via shared index
+      function addRow(name, numbers) {
+        const tbody = document.getElementById('tableBody');
+        const cards = document.getElementById('cardsBody');
+        tbody.appendChild(buildRowHTML(name, numbers));
+        cards.appendChild(buildCardHTML(name, numbers));
+        bindSync();
+        updateRowNumbers();
+      }
+
+      function deleteRow(el) {
+        const idx = indexOfControl(el);
+        if (idx < 0) return;
+        document.getElementById('tableBody').rows[idx]?.remove();
+        document.getElementById('cardsBody').children[idx]?.remove();
+        updateRowNumbers();
+      }
+
+      function indexOfControl(el) {
+        // find which row/card this control belongs to
+        const card = el.closest('.person-card');
+        if (card) return [...document.getElementById('cardsBody').children].indexOf(card);
+        const tr = el.closest('tr');
+        if (tr) return [...document.getElementById('tableBody').rows].indexOf(tr);
+        return -1;
+      }
+
+      function updateRowNumbers() {
+        document.querySelectorAll('#tableBody .row-num').forEach((b,i)=> b.textContent = i+1);
+        document.querySelectorAll('#cardsBody .card-num').forEach((b,i)=> b.textContent = i+1);
+      }
+
+      // sync name + values between matching desktop row & mobile card
+      function bindSync() {
+        const rows = document.getElementById('tableBody').rows;
+        const cards = document.getElementById('cardsBody').children;
+        for (let i = 0; i < rows.length; i++) {
+          if (!cards[i]) continue;
+          const rName = rows[i].querySelector('.name-input');
+          const cName = cards[i].querySelector('.card-name');
+          if (!rName.dataset.bound) {
+            rName.addEventListener('input', () => { cName.value = rName.value; });
+            cName.addEventListener('input', () => { rName.value = cName.value; });
+            rName.dataset.bound = cName.dataset.bound = '1';
+          }
+          const rVals = rows[i].querySelectorAll('.day-val');
+          const cVals = cards[i].querySelectorAll('.day-val');
+          rVals.forEach((rv, j) => {
+            if (rv.dataset.bound) return;
+            const cv = cVals[j];
+            rv.addEventListener('input', () => { cv.value = rv.value; });
+            cv.addEventListener('input', () => { rv.value = cv.value; });
+            rv.dataset.bound = cv.dataset.bound = '1';
+          });
         }
+      }
+
+      // ---------- Modal ----------
+      let currentEditingIndex = null;
+      function openModal(btn) {
+        currentEditingIndex = indexOfControl(btn);
+        document.getElementById('rowValue').value = '0';
+        new bootstrap.Modal(document.getElementById('numberModal')).show();
+      }
+      document.getElementById('confirmRowValue').addEventListener('click', () => {
+        const value = document.getElementById('rowValue').value;
+        if (currentEditingIndex !== null && currentEditingIndex >= 0) {
+          const row = document.getElementById('tableBody').rows[currentEditingIndex];
+          const card = document.getElementById('cardsBody').children[currentEditingIndex];
+          row?.querySelectorAll('.day-val').forEach(i => i.value = value);
+          card?.querySelectorAll('.day-val').forEach(i => i.value = value);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('numberModal')).hide();
       });
 
-      // function saveDataToStorage() {
-      //   const tbody = document.getElementById("tableBody");
-      //   const data = [];
-      //   for (let row of tbody.rows) {
-      //     const name = row.cells[2].querySelector('input').value;
-      //     const numbers = [];
-      //     for (let i = 3; i <= 9; i++) {
-      //       numbers.push(row.cells[i].querySelector('input').value);
-      //     }
-      //     data.push({ name, numbers });
-      //   }
-      //   localStorage.setItem('tableData', JSON.stringify(data));
-      //   alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-      // }
+      // ---------- Storage ----------
+      function collectData() {
+        const rows = document.getElementById('tableBody').rows;
+        const data = [];
+        for (const row of rows) {
+          const name = row.querySelector('.name-input').value;
+          const numbers = [...row.querySelectorAll('.day-val')].map(i => i.value);
+          data.push({ name, numbers });
+        }
+        return data;
+      }
 
       function saveDataToStorage() {
-  const tbody = document.getElementById("tableBody");
-  const data = [];
-  for (let row of tbody.rows) {
-    const name = row.cells[2].querySelector('input').value;
-    const numbers = [];
-    for (let i = 3; i <= 9; i++) {
-      numbers.push(row.cells[i].querySelector('input').value);
-    }
-    data.push({ name, numbers });
-  }
-
-  // ✅ เก็บ index สัปดาห์ที่เลือกไว้ด้วย
-  const selectedWeekIndex = document.getElementById('weekSelect').value;
-  const weeks = generateWeeks(4);
-  const selectedStartDate = weeks[selectedWeekIndex].start;
-
-  const fullData = {
-    selectedWeekIndex,
-    selectedStartDate,
-    rows: data
-  };
-
-  localStorage.setItem('tableData', JSON.stringify(fullData));
-  alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-}
-
+        const selectedWeekIndex = document.getElementById('weekSelect').value;
+        const weeks = generateWeeks(4);
+        const fullData = {
+          selectedWeekIndex,
+          selectedStartDate: weeks[selectedWeekIndex].start,
+          rows: collectData()
+        };
+        localStorage.setItem('tableData', JSON.stringify(fullData));
+        showToast('บันทึกข้อมูลแล้ว');
+      }
 
       function loadDataFromStorage() {
-  const stored = localStorage.getItem('tableData');
-  if (!stored) return;
+        const stored = localStorage.getItem('tableData');
+        const weeks = generateWeeks(4);
+        if (!stored) return;
+        let data;
+        try { data = JSON.parse(stored); } catch(e) { return; }
+        const rowsData = Array.isArray(data) ? data : data.rows;
+        const weekIndex = (data && data.selectedWeekIndex != null) ? data.selectedWeekIndex : 4;
 
-  const data = JSON.parse(stored);
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
+        document.getElementById('tableBody').innerHTML = '';
+        document.getElementById('cardsBody').innerHTML = '';
 
-  // ✅ ใช้ data.rows เพราะตอน save เราเก็บไว้ใน fullData.rows
-  data.rows.forEach((item, index) => {
-    const newRow = tbody.insertRow();
+        document.getElementById('weekSelect').value = weekIndex;
+        renderWeekHeader(weeks[weekIndex].start);
 
-    const cell0 = newRow.insertCell(0);
-    cell0.innerHTML = `<button class="btn btn-sm btn-outline-secondary" onclick="openModal(this)">${index + 1}</button>`;
-
-    const cellDrag = newRow.insertCell(1);
-    cellDrag.innerHTML = `<span class="drag-handle">☰</span>`;
-
-    const cell1 = newRow.insertCell(2);
-    cell1.innerHTML = `<input type="text" class="form-control w-100" value="${item.name}">`;
-
-    for (let i = 0; i < 7; i++) {
-      const cell = newRow.insertCell(i + 3);
-      cell.innerHTML = `<input type="text" class="form-control w-100" value="${item.numbers[i]}">`;
-    }
-
-    const cellLast = newRow.insertCell(10);
-    cellLast.innerHTML = '<button class="btn text-danger" onclick="deleteRow(this)">❌</button>';
-  });
-
-  updateRowNumbers();
-
-  // ✅ แสดงผลหัวตารางตามสัปดาห์ที่โหลดมา
-  const weeks = generateWeeks(4);
-  document.getElementById('weekSelect').value = data.selectedWeekIndex;
-  renderWeekHeader(weeks[data.selectedWeekIndex].start);
-}
-
+        (rowsData || []).forEach(item => addRow(item.name, item.numbers));
+        renderWeekHeader(weeks[weekIndex].start);
+      }
 
       function saveAndOpenPrintView() {
         saveDataToStorage();
         window.open('print.html', '_blank');
       }
 
-      window.addEventListener('load', function () {
+      // ---------- Toast ----------
+      let toastTimer;
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+      }
+
+      // ---------- Init ----------
+      window.addEventListener('load', () => {
         const weekSelect = document.getElementById('weekSelect');
         const weeks = generateWeeks(4);
         weeks.forEach((w, i) => {
           const opt = document.createElement('option');
-          opt.value = i;
-          opt.textContent = w.label;
+          opt.value = i; opt.textContent = w.label;
           weekSelect.appendChild(opt);
         });
         weekSelect.value = 4;
         renderWeekHeader(weeks[4].start);
+
         weekSelect.addEventListener('change', () => {
-          const selectedWeek = weeks[weekSelect.value];
-          renderWeekHeader(selectedWeek.start);
+          renderWeekHeader(weeks[weekSelect.value].start);
         });
+
         loadDataFromStorage();
+        if (document.getElementById('tableBody').rows.length === 0) addRow();
 
+        // keep both lists reorderable & mirrored
+        const syncOrder = (from, to) => {
+          // reorder `to` to match `from` by reading names? simpler: rebuild order indices
+        };
         new Sortable(document.getElementById('tableBody'), {
-          animation: 150,
-          handle: '.drag-handle', // ✅ ต้องระบุไว้
-          onEnd: function () {
-            const rows = document.querySelectorAll("#tableBody tr");
-            rows.forEach((tr, index) => {
-              tr.cells[0].querySelector("button").textContent = index + 1;
-            });
-          }
+          animation: 150, handle: '.drag-handle',
+          onEnd: (e) => { moveItem('cardsBody', e.oldIndex, e.newIndex); updateRowNumbers(); }
         });
-
+        new Sortable(document.getElementById('cardsBody'), {
+          animation: 150, handle: '.card-drag',
+          onEnd: (e) => { moveItem('tableBody', e.oldIndex, e.newIndex); updateRowNumbers(); }
+        });
       });
+
+      function moveItem(containerId, oldIndex, newIndex) {
+        const c = document.getElementById(containerId);
+        const items = containerId === 'tableBody' ? c.rows : c.children;
+        const node = items[oldIndex];
+        if (!node) return;
+        if (newIndex >= items.length) c.appendChild(node);
+        else c.insertBefore(node, items[newIndex > oldIndex ? newIndex + 1 : newIndex]);
+      }
     </script>
   </body>
 </html>
